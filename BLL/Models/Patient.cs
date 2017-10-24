@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Prescriptor.Models
+namespace Model.Model
 {
-    public class Patient
+    public partial class Patient
     {
         public int ID { get; set; }
         public string Name { get; set; }
@@ -14,7 +14,6 @@ namespace Prescriptor.Models
         public DateTime BirthDate { get; set; }
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
-
-        public ICollection<Prescription> Prescriptions { get; set; }
+        public virtual ICollection<Prescription> Prescriptions { get; set; }
     }
 }

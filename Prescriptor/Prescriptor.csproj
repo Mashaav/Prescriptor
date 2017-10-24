@@ -5,6 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <Compile Remove="Migrations\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="Migrations\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Data\**" />
+    <None Remove="Migrations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Patient.cs" />
+    <Compile Remove="Models\Prescription.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
@@ -16,7 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <ProjectReference Include="..\BLL\BLL.csproj" />
+    <ProjectReference Include="..\DAL\DAL.csproj" />
   </ItemGroup>
 
 </Project>

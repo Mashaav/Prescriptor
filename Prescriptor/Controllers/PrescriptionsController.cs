@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Prescriptor.Data;
-using Prescriptor.Models;
+using DAL;
+using DAL.Models;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
+using Model.Model;
 
 namespace Prescriptor.Controllers
 {
     public class PrescriptionsController : Controller
     {
         private readonly PrescriptorContext _context;
-        private static Dictionary<string, string> DataBag;
         public PrescriptionsController(PrescriptorContext context)
         {
             _context = context;
-            DataBag = new Dictionary<string, string>();
         }
 
         // GET: Prescriptions
@@ -146,7 +146,6 @@ namespace Prescriptor.Controllers
             try {
                 if (ModelState.IsValid)
                 {
-                    prescription.Outdated = Extension.IsOutdated(prescription.DrugSubmissionDate);
                     _context.Add(prescription);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
