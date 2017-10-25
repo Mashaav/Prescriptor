@@ -1,12 +1,12 @@
-﻿using DAL;
-using DAL.Models;
+﻿using DAL.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+using Prescriptor.Web.Configuration;
 
-namespace Prescriptor
+namespace Prescriptor.Web
 {
     public class Startup
     {
@@ -24,6 +24,8 @@ namespace Prescriptor
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc();
+            services.AddOptions();
+            services.Configure<Settings>(Configuration.GetSection("ExpirationTime"));
 
         }
 

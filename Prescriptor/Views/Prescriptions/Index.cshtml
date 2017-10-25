@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Model.Model.Prescription>
+﻿@model IEnumerable<BLL.Models.Prescription>
 
 @{
     ViewData["Title"] = "Prescriptions";
@@ -30,7 +30,7 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["DrugNameSortParam"]">@Html.DisplayNameFor(model => model.DrugName)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DrugSubmissionDateSortParam"]">@Html.DisplayNameFor(model => model.DrugSubmissionDate)</a>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["PrescriptionCreationDateSortParam"]">@Html.DisplayNameFor(model => model.PrescriptionCreationDate)</a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["PatientIdSortParam"]">@Html.DisplayNameFor(model => model.PatientID)</a>
@@ -45,7 +45,7 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["PaymentMethodSortParam"]">@Html.DisplayNameFor(model => model.PaymentMethod)</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["OutdatedSortParam"]">@Html.DisplayNameFor(model => model.Outdated)</a>
+                Outdated
             </th>
         </tr>
     </thead>
@@ -59,7 +59,7 @@
                 @Html.DisplayFor(modelItem => item.DrugName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DrugSubmissionDate)
+                @Html.DisplayFor(modelItem => item.PrescriptionCreationDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Patient.ID)
@@ -74,7 +74,11 @@
                 @Html.DisplayFor(modelItem => item.PaymentMethod)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Outdated)
+                @{
+                    bool isExpired = false;
+                    isExpired = (item.PrescriptionCreationDate - DateTime.Now).TotalDays < (int)ViewData["ExpirationTime"];
+                }
+                @Html.CheckBox("OutdatedCheckbox", isExpired, new { disabled = "disabled" })
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

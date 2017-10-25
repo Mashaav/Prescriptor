@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Model.Model
+namespace BLL.Models
 {
     public partial class Patient
     {

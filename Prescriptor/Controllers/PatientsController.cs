@@ -1,12 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using BLL.Models;
+using DAL.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL;
-using DAL.Models;
-using Model.Model;
 
-namespace Prescriptor.Controllers
+namespace Prescriptor.Web.Controllers
 {
     public class PatientsController : Controller
     {
@@ -33,11 +32,10 @@ namespace Prescriptor.Controllers
             {
                 patients = patients.Where(p => p.ID.ToString() == searchString
                                                  || p.ID.ToString().Contains(searchString)
-                                                 || p.Name.Contains(searchString)
-                                                 || p.LastName.Contains(searchString)
-                                                 || p.BirthDate.ToShortDateString().Contains(searchString)
-                                                 || p.PhoneNumber.Contains(searchString)
-                                                 );
+                                                 || (!string.IsNullOrEmpty(p.Name) && p.Name.Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.LastName) && p.LastName.Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.BirthDate.ToLongDateString()) && p.BirthDate.ToShortDateString().Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.PhoneNumber) && p.PhoneNumber.Contains(searchString)));
             }
 
             switch (sortOrder)

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prescriptor", "Prescriptor\Prescriptor.csproj", "{47299999-C5AE-4E5A-BEB7-ED598997B9BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prescriptor.Web", "Prescriptor\Prescriptor.Web.csproj", "{47299999-C5AE-4E5A-BEB7-ED598997B9BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{DC4F97E8-A956-4FF8-BDC0-B0EBC5BD2D75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prescriptor.DAL", "DAL\Prescriptor.DAL.csproj", "{DC4F97E8-A956-4FF8-BDC0-B0EBC5BD2D75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{AF9B3CC5-F0BA-4BEA-8158-509C7C2399A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prescriptor.BLL", "BLL\Prescriptor.BLL.csproj", "{AF9B3CC5-F0BA-4BEA-8158-509C7C2399A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

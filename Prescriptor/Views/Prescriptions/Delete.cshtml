@@ -1,4 +1,4 @@
-﻿@model Model.Model.Prescription
+﻿@model BLL.Models.Prescription
 @{
     ViewData["Title"] = "Delete";
 }
@@ -23,10 +23,10 @@
             @Html.DisplayFor(model => model.DrugName)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.DrugSubmissionDate)
+            @Html.DisplayNameFor(model => model.PrescriptionCreationDate)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.DrugSubmissionDate)
+            @Html.DisplayFor(model => model.PrescriptionCreationDate)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.PaymentMethod)

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Model.Model;
+﻿using BLL.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Models
+namespace DAL.Data
 {
     public partial class PrescriptorContext : DbContext
     {

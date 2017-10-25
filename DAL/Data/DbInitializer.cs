@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Model.Model;
+using BLL.Models;
 
-namespace DAL.Models
+namespace DAL.Data
 {
     public static class DbInitializer
     {
@@ -30,9 +30,9 @@ namespace DAL.Models
 
             var prescriptions = new Prescription[]
             {
-                new Prescription{DrugName="Placebox", DrugSubmissionDate=new DateTime(2017,12,17), PaymentMethod=Prescription.Payment.PrivatePay, PatientID=1},
-                new Prescription{DrugName="Rutinox", DrugSubmissionDate=new DateTime(2018,04,1), PaymentMethod=Prescription.Payment.Medicare, PatientID=2},
-                new Prescription{DrugName="Placebox", DrugSubmissionDate=new DateTime(2016,1,16), PaymentMethod=Prescription.Payment.Other, PatientID=3}
+                new Prescription{DrugName="Placebox", PrescriptionCreationDate=new DateTime(2017,12,17), PaymentMethod=Prescription.Payment.PrivatePay, PatientID=1},
+                new Prescription{DrugName="Rutinox", PrescriptionCreationDate=new DateTime(2018,04,1), PaymentMethod=Prescription.Payment.Medicare, PatientID=2},
+                new Prescription{DrugName="Placebox", PrescriptionCreationDate=new DateTime(2016,1,16), PaymentMethod=Prescription.Payment.Other, PatientID=3}
             };
             
 

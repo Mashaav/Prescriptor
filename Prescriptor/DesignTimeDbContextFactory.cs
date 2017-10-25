@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using DAL.Models;
+using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

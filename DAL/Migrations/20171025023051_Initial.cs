@@ -32,10 +32,9 @@ namespace DAL.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     DrugName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DrugSubmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Outdated = table.Column<bool>(type: "bit", nullable: false),
                     PatientID = table.Column<int>(type: "int", nullable: false),
-                    PaymentMethod = table.Column<int>(type: "int", nullable: false)
+                    PaymentMethod = table.Column<int>(type: "int", nullable: false),
+                    PrescriptionCreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

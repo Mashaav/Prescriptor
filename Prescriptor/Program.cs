@@ -1,12 +1,11 @@
 ﻿using System;
+using DAL.Data;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using DAL;
-using DAL.Models;
+using Microsoft.Extensions.Logging;
 
-namespace Prescriptor
+namespace Prescriptor.Web
 {
     public class Program
     {

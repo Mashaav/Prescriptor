@@ -1,6 +1,4 @@
-using System;
-
-namespace Prescriptor.Models
+namespace Prescriptor.Web.Models
 {
     public class ErrorViewModel
     {

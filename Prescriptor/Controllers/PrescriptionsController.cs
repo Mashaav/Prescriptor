@@ -2,35 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Models;
+using DAL.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DAL;
-using DAL.Models;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
-using Model.Model;
+using Microsoft.Extensions.Options;
+using Prescriptor.Web.Configuration;
 
-namespace Prescriptor.Controllers
+namespace Prescriptor.Web.Controllers
 {
     public class PrescriptionsController : Controller
     {
         private readonly PrescriptorContext _context;
-        public PrescriptionsController(PrescriptorContext context)
+        private Settings ConfigurationSettings { get; set; }
+
+        public PrescriptionsController(PrescriptorContext context, IOptions<Settings> settings)
         {
             _context = context;
+            ConfigurationSettings = settings.Value;
         }
 
         // GET: Prescriptions
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
+            ViewData["ExpirationTime"] = ConfigurationSettings.ExpirationTime;
             ViewData["IdSortParam"] = String.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
             ViewData["DrugNameSortParam"] = sortOrder == "drug_name" ? "drug_name_desc" : "drug_name";
-            ViewData["DrugSubmissionDateSortParam"] = sortOrder == "drug_submission_date" ? "drug_submission_date_desc" : "drug_submission_date";
+            ViewData["PrescriptionCreationDateSortParam"] = sortOrder == "prescription_creation_date" ? "prescription_creation_date_desc" : "prescription_creation_date";
             ViewData["PatientIdSortParam"] = sortOrder == "patient_id" ? "patient_id_desc" : "patient_id";
             ViewData["PatientNameSortParam"] = sortOrder == "patient_name" ? "patient_name_desc" : "patient_name";
             ViewData["PatientLastNameSortParam"] = sortOrder == "patient_last_name" ? "patient_last_name_desc" : "patient_last_name";
             ViewData["PaymentMethodSortParam"] = sortOrder == "payment_method" ? "payment_method_desc" : "payment_method";
-            ViewData["OutdatedSortParam"] = sortOrder == "outdated" ? "outdated_desc" : "outdated";
             ViewData["CurrentFilter"] = searchString;
 
             var prescriptions = from p in _context.Prescriptions.Include(p => p.Patient)
@@ -46,12 +49,12 @@ namespace Prescriptor.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 prescriptions = prescriptions.Where(p => p.ID.ToString() == searchString
-                                                 || p.DrugName.Contains(searchString)
-                                                 || p.DrugSubmissionDate.ToShortDateString().Contains(searchString)
-                                                 || p.PatientID.ToString().Contains(searchString)
-                                                 || p.Patient.Name.Contains(searchString)
-                                                 || p.Patient.LastName.Contains(searchString)
-                                                 || payments[p.PaymentMethod.ToString()].Contains(searchString));
+                                                 || (!string.IsNullOrEmpty(p.DrugName) && p.DrugName.Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.PrescriptionCreationDate.ToLongDateString()) && p.PrescriptionCreationDate.ToShortDateString().Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.PatientID.ToString()) && p.PatientID.ToString().Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.Patient.Name) && p.Patient.Name.Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.Patient.LastName) && p.Patient.LastName.Contains(searchString))
+                                                 || (!string.IsNullOrEmpty(p.PaymentMethod.ToString()) && payments[p.PaymentMethod.ToString()].Contains(searchString)));
             }
             
             switch(sortOrder)
@@ -68,11 +71,11 @@ namespace Prescriptor.Controllers
                 case "drug_name_desc":
                     prescriptions = prescriptions.OrderByDescending(p => p.DrugName);
                     break;
-                case "drug_submission_date":
-                    prescriptions = prescriptions.OrderBy(p => p.DrugSubmissionDate);
+                case "prescription_creation_date":
+                    prescriptions = prescriptions.OrderBy(p => p.PrescriptionCreationDate);
                     break;
-                case "drug_submission_date_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.DrugSubmissionDate);
+                case "prescription_creation_date_desc":
+                    prescriptions = prescriptions.OrderByDescending(p => p.PrescriptionCreationDate);
                     break;
                 case "patient_id":
                     prescriptions = prescriptions.OrderBy(p => p.Patient.ID);
@@ -97,12 +100,6 @@ namespace Prescriptor.Controllers
                     break;
                 case "payment_method_desc":
                     prescriptions = prescriptions.OrderByDescending(p => p.PaymentMethod);
-                    break;
-                case "outdated":
-                    prescriptions = prescriptions.OrderBy(p => p.Outdated);
-                    break;
-                case "outdated_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.Outdated);
                     break;
             }
             
@@ -141,7 +138,7 @@ namespace Prescriptor.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PatientID,DrugName,DrugSubmissionDate,PaymentMethod")] Prescription prescription)
+        public async Task<IActionResult> Create([Bind("PatientID,DrugName,PrescriptionCreationDate,PaymentMethod")] Prescription prescription)
         {
             try {
                 if (ModelState.IsValid)
@@ -152,7 +149,7 @@ namespace Prescriptor.Controllers
                 }
             }catch(DbUpdateException ex)
             {
-                ModelState.AddModelError("", "Unable to save changes. " +
+                ModelState.AddModelError(ex.Message, "Unable to save changes. " +
                     "Try again, and if problem persists " +
                     "see your system administrator.");
             }
@@ -182,7 +179,7 @@ namespace Prescriptor.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,PatientID,DrugName,DrugSubmissionDate,PaymentMethod")] Prescription prescription)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,PatientID,DrugName,PrescriptionCreationDate,PaymentMethod")] Prescription prescription)
         {
             if (id != prescription.ID)
             {
