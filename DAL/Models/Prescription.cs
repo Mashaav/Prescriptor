@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BLL.Models
+namespace DAL.Models
 {
     public partial class Prescription
     {

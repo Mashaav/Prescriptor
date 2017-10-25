@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using BLL.Models;
+using DAL.Models;
 
 namespace DAL.Data
 {

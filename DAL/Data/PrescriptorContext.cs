@@ -1,4 +1,4 @@
-﻿using BLL.Models;
+﻿using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Data

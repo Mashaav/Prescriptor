@@ -110,11 +110,13 @@
   <ItemGroup>
     <Compile Include="Data\DbInitializer.cs" />
     <Compile Include="Data\PrescriptorContext.cs" />
-    <Compile Include="Migrations\20171025023051_Initial.cs" />
-    <Compile Include="Migrations\20171025023051_Initial.designer.cs">
-      <DependentUpon>20171025023051_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\20171025121334_Initial.cs" />
+    <Compile Include="Migrations\20171025121334_Initial.designer.cs">
+      <DependentUpon>20171025121334_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\PrescriptorContextModelSnapshot.cs" />
+    <Compile Include="Models\Patient.cs" />
+    <Compile Include="Models\Prescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
