@@ -114,7 +114,7 @@ namespace Prescriptor.Tests.BLL
         [Theory(DisplayName = "PrescriptionExists Shouldn't Find Prescription")]
         [InlineData(4)]//Note: Passes.
         [InlineData(0)]//Note: Passes.
-        [InlineData(1)]//Note: Fails as should -> there is a prescription in context, that contains id = 1.
+        [InlineData(1)]//Note: Fails as should -> there is a prescription in context, that contains id = 1. Run as single for proper effect. 
         public void PrescriptionExists_ShouldntFind_Precription(int id)
         {
             var context = GetContext();

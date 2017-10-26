@@ -110,9 +110,9 @@
   <ItemGroup>
     <Compile Include="Data\DbInitializer.cs" />
     <Compile Include="Data\PrescriptorContext.cs" />
-    <Compile Include="Migrations\20171026020915_Initial.cs" />
-    <Compile Include="Migrations\20171026020915_Initial.designer.cs">
-      <DependentUpon>20171026020915_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\20171026070523_Initial.cs" />
+    <Compile Include="Migrations\20171026070523_Initial.designer.cs">
+      <DependentUpon>20171026070523_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\PrescriptorContextModelSnapshot.cs" />
     <Compile Include="Models\ErrorViewModel.cs" />
