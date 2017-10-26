@@ -12,7 +12,7 @@ using System;
 namespace DAL.Migrations
 {
     [DbContext(typeof(PrescriptorContext))]
-    [Migration("20171025121334_Initial")]
+    [Migration("20171026020915_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
