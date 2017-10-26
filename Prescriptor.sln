@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prescriptor.DAL", "DAL\Pres
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prescriptor.BLL", "BLL\Prescriptor.BLL.csproj", "{AF9B3CC5-F0BA-4BEA-8158-509C7C2399A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prescriptor.Tests", "Prescriptor.Tests\Prescriptor.Tests.csproj", "{B5D994C0-076C-4603-951C-81C1E00B73D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{AF9B3CC5-F0BA-4BEA-8158-509C7C2399A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF9B3CC5-F0BA-4BEA-8158-509C7C2399A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF9B3CC5-F0BA-4BEA-8158-509C7C2399A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5D994C0-076C-4603-951C-81C1E00B73D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5D994C0-076C-4603-951C-81C1E00B73D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5D994C0-076C-4603-951C-81C1E00B73D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5D994C0-076C-4603-951C-81C1E00B73D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

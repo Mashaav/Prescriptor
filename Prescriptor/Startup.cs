@@ -25,8 +25,7 @@ namespace Prescriptor.Web
 
             services.AddMvc();
             services.AddOptions();
-            services.Configure<Settings>(Configuration.GetSection("ExpirationTime"));
-
+            services.Configure<Settings>(options => Configuration.GetSection("Settings").Bind(options));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

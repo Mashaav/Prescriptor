@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
+using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
-using Prescriptor.Web.Models;
 
 namespace Prescriptor.Web.Controllers
 {

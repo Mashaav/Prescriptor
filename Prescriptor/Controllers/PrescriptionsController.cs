@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using BLL.Services;
+using BLL.Utils;
 using DAL.Data;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -15,29 +16,32 @@ namespace Prescriptor.Web.Controllers
     public class PrescriptionsController : Controller
     {
         private readonly PrescriptorContext _context;
+        private readonly PrescriptionService _prescriptionService;
+
         private Settings ConfigurationSettings { get; set; }
 
         public PrescriptionsController(PrescriptorContext context, IOptions<Settings> settings)
         {
             _context = context;
-            ConfigurationSettings = settings.Value;
+            ConfigurationSettings = settings?.Value;
+            _prescriptionService = new PrescriptionService(_context);
         }
 
         // GET: Prescriptions
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            ViewData["ExpirationTime"] = ConfigurationSettings.ExpirationTime;
-            ViewData["IdSortParam"] = String.IsNullOrEmpty(sortOrder) ? "id_desc" : "";
-            ViewData["DrugNameSortParam"] = sortOrder == "drug_name" ? "drug_name_desc" : "drug_name";
-            ViewData["PrescriptionCreationDateSortParam"] = sortOrder == "prescription_creation_date" ? "prescription_creation_date_desc" : "prescription_creation_date";
-            ViewData["PatientIdSortParam"] = sortOrder == "patient_id" ? "patient_id_desc" : "patient_id";
-            ViewData["PatientNameSortParam"] = sortOrder == "patient_name" ? "patient_name_desc" : "patient_name";
-            ViewData["PatientLastNameSortParam"] = sortOrder == "patient_last_name" ? "patient_last_name_desc" : "patient_last_name";
-            ViewData["PaymentMethodSortParam"] = sortOrder == "payment_method" ? "payment_method_desc" : "payment_method";
+            if(ConfigurationSettings !=null)
+                ViewData["ExpirationTime"] = ConfigurationSettings.ExpirationTime;
+            ViewData["IdSortParam"] = String.IsNullOrEmpty(sortOrder) ? nameof(Support.PrescriptionsSortOrder.IdDesc) : "";
+            ViewData["DrugNameSortParam"] = sortOrder == nameof(Support.PrescriptionsSortOrder.DrugName) ? nameof(Support.PrescriptionsSortOrder.DrugNameDesc) : nameof(Support.PrescriptionsSortOrder.DrugName);
+            ViewData["PrescriptionCreationDateSortParam"] = sortOrder == nameof(Support.PrescriptionsSortOrder.PrescriptionCreationDate) ? nameof(Support.PrescriptionsSortOrder.PrescriptionCreationDateDesc) : nameof(Support.PrescriptionsSortOrder.PrescriptionCreationDate);
+            ViewData["PatientIdSortParam"] = sortOrder == nameof(Support.PrescriptionsSortOrder.PatientId) ? nameof(Support.PrescriptionsSortOrder.PatientIdDesc) : nameof(Support.PrescriptionsSortOrder.PatientId);
+            ViewData["PatientNameSortParam"] = sortOrder == nameof(Support.PrescriptionsSortOrder.PatientName) ? nameof(Support.PrescriptionsSortOrder.PatientNameDesc) : nameof(Support.PrescriptionsSortOrder.PatientName);
+            ViewData["PatientLastNameSortParam"] = sortOrder == nameof(Support.PrescriptionsSortOrder.PatientLastName) ? nameof(Support.PrescriptionsSortOrder.PatientLastNameDesc) : nameof(Support.PrescriptionsSortOrder.PatientLastName);
+            ViewData["PaymentMethodSortParam"] = sortOrder == nameof(Support.PrescriptionsSortOrder.PaymentMethod) ? nameof(Support.PrescriptionsSortOrder.PaymentMethodDesc) : nameof(Support.PrescriptionsSortOrder.PaymentMethod);
             ViewData["CurrentFilter"] = searchString;
 
-            var prescriptions = from p in _context.Prescriptions.Include(p => p.Patient)
-                                select p;
+            var prescriptions = _prescriptionService.GetPrescriptions();
 
             Dictionary<string, string> payments = new Dictionary<string, string>
             {
@@ -48,60 +52,10 @@ namespace Prescriptor.Web.Controllers
             
             if (!string.IsNullOrEmpty(searchString))
             {
-                prescriptions = prescriptions.Where(p => p.ID.ToString() == searchString
-                                                 || (!string.IsNullOrEmpty(p.DrugName) && p.DrugName.Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.PrescriptionCreationDate.ToLongDateString()) && p.PrescriptionCreationDate.ToShortDateString().Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.PatientID.ToString()) && p.PatientID.ToString().Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.Patient.Name) && p.Patient.Name.Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.Patient.LastName) && p.Patient.LastName.Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.PaymentMethod.ToString()) && payments[p.PaymentMethod.ToString()].Contains(searchString)));
+                prescriptions = _prescriptionService.SearchPrescriptions(searchString, prescriptions, payments);
             }
             
-            switch(sortOrder)
-            {
-                default:
-                    prescriptions = prescriptions.OrderBy(p => p.ID);
-                    break;
-                case "id_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.ID);
-                    break;
-                case "drug_name":
-                    prescriptions = prescriptions.OrderBy(p => p.DrugName);
-                    break;
-                case "drug_name_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.DrugName);
-                    break;
-                case "prescription_creation_date":
-                    prescriptions = prescriptions.OrderBy(p => p.PrescriptionCreationDate);
-                    break;
-                case "prescription_creation_date_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.PrescriptionCreationDate);
-                    break;
-                case "patient_id":
-                    prescriptions = prescriptions.OrderBy(p => p.Patient.ID);
-                    break;
-                case "patient_id_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.Patient.ID);
-                    break;
-                case "patient_name":
-                    prescriptions = prescriptions.OrderBy(p => p.Patient.Name);
-                    break;
-                case "patient_name_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.Patient.Name);
-                    break;
-                case "patient_last_name":
-                    prescriptions = prescriptions.OrderBy(p => p.Patient.LastName);
-                    break;
-                case "patient_last_name_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.Patient.LastName);
-                    break;
-                case "payment_method":
-                    prescriptions = prescriptions.OrderBy(p => p.PaymentMethod);
-                    break;
-                case "payment_method_desc":
-                    prescriptions = prescriptions.OrderByDescending(p => p.PaymentMethod);
-                    break;
-            }
+            prescriptions = _prescriptionService.SortPrescriptions(sortOrder, prescriptions);
             
             
             return View(await prescriptions.AsNoTracking().ToListAsync());
@@ -115,9 +69,8 @@ namespace Prescriptor.Web.Controllers
                 return NotFound();
             }
 
-            var prescription = await _context.Prescriptions
-                .Include(p => p.Patient)
-                .SingleOrDefaultAsync(m => m.ID == id);
+            var prescription = await _prescriptionService.GetPrescription(id);
+
             if (prescription == null)
             {
                 return NotFound();
@@ -143,8 +96,7 @@ namespace Prescriptor.Web.Controllers
             try {
                 if (ModelState.IsValid)
                 {
-                    _context.Add(prescription);
-                    await _context.SaveChangesAsync();
+                    await _prescriptionService.AddPrescription(prescription);
                     return RedirectToAction(nameof(Index));
                 }
             }catch(DbUpdateException ex)
@@ -165,7 +117,7 @@ namespace Prescriptor.Web.Controllers
                 return NotFound();
             }
 
-            var prescription = await _context.Prescriptions.SingleOrDefaultAsync(m => m.ID == id);
+            var prescription = await _prescriptionService.EditGetPrescription(id);
             if (prescription == null)
             {
                 return NotFound();
@@ -190,12 +142,11 @@ namespace Prescriptor.Web.Controllers
             {
                 try
                 {
-                    _context.Update(prescription);
-                    await _context.SaveChangesAsync();
+                    await _prescriptionService.EditUpdatePrescription(prescription);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PrescriptionExists(prescription.ID))
+                    if (!_prescriptionService.PrescriptionExists(prescription.ID))
                     {
                         return NotFound();
                     }
@@ -218,9 +169,8 @@ namespace Prescriptor.Web.Controllers
                 return NotFound();
             }
 
-            var prescription = await _context.Prescriptions
-                .Include(p => p.Patient)
-                .SingleOrDefaultAsync(m => m.ID == id);
+            var prescription = await _prescriptionService.GetPrescription(id);
+
             if (prescription == null)
             {
                 return NotFound();
@@ -234,15 +184,8 @@ namespace Prescriptor.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var prescription = await _context.Prescriptions.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Prescriptions.Remove(prescription);
-            await _context.SaveChangesAsync();
+            await _prescriptionService.DeletePrescription(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PrescriptionExists(int id)
-        {
-            return _context.Prescriptions.Any(e => e.ID == id);
         }
     }
 }

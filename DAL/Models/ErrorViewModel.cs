@@ -1,4 +1,4 @@
-namespace Prescriptor.Web.Models
+namespace DAL.Models
 {
     public class ErrorViewModel
     {

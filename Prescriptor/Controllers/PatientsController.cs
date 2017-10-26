@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using BLL.Services;
+using BLL.Utils;
 using DAL.Data;
 using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,67 +11,32 @@ namespace Prescriptor.Web.Controllers
     public class PatientsController : Controller
     {
         private readonly PrescriptorContext _context;
+        private readonly PatientService _patientService;
 
         public PatientsController(PrescriptorContext context)
         {
             _context = context;
+            _patientService = new PatientService(_context);
         }
 
         // GET: Patients
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            ViewData["PatientIdSortParam"] = string.IsNullOrEmpty(sortOrder) ? "patient_id_desc" : "";
-            ViewData["PatientNameSortParam"] = sortOrder == "patient_name" ? "patient_name_desc" : "patient_name";
-            ViewData["PatientLastNameSortParam"] = sortOrder == "patient_last_name" ? "patient_last_name_desc" : "patient_last_name";
-            ViewData["PatientBirthDateSortParam"] = sortOrder == "patient_birth_date" ? "patient_birth_date_desc" : "patient_birth_date";
-            ViewData["PatientPhoneNumberSortParam"] = sortOrder == "patient_phone_number" ? "patient_phone_number_desc" : "patient_phone_number";
+            ViewData["PatientIdSortParam"] = string.IsNullOrEmpty(sortOrder) ? nameof(Support.PatientsSortOrder.PatientIdDesc) : "";
+            ViewData["PatientNameSortParam"] = sortOrder == nameof(Support.PatientsSortOrder.PatientName) ? nameof(Support.PatientsSortOrder.PatientNameDesc) : nameof(Support.PatientsSortOrder.PatientName);
+            ViewData["PatientLastNameSortParam"] = sortOrder == nameof(Support.PatientsSortOrder.PatientLastName) ? nameof(Support.PatientsSortOrder.PatientLastNameDesc) : nameof(Support.PatientsSortOrder.PatientLastName);
+            ViewData["PatientBirthDateSortParam"] = sortOrder == nameof(Support.PatientsSortOrder.PatientBirthDate) ? nameof(Support.PatientsSortOrder.PatientBirthDateDesc) : nameof(Support.PatientsSortOrder.PatientBirthDate);
+            ViewData["PatientPhoneNumberSortParam"] = sortOrder == nameof(Support.PatientsSortOrder.PatientPhoneNumber) ? nameof(Support.PatientsSortOrder.PatientPhoneNumberDesc) : nameof(Support.PatientsSortOrder.PatientPhoneNumber);
 
-            var patients = from p in _context.Patients
-                           select p;
+            var patients = _patientService.GetPatients();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                patients = patients.Where(p => p.ID.ToString() == searchString
-                                                 || p.ID.ToString().Contains(searchString)
-                                                 || (!string.IsNullOrEmpty(p.Name) && p.Name.Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.LastName) && p.LastName.Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.BirthDate.ToLongDateString()) && p.BirthDate.ToShortDateString().Contains(searchString))
-                                                 || (!string.IsNullOrEmpty(p.PhoneNumber) && p.PhoneNumber.Contains(searchString)));
+                patients = _patientService.SearchPatients(searchString, patients);
             }
 
-            switch (sortOrder)
-            {
-                default:
-                    patients = patients.OrderBy(p => p.ID);
-                    break;
-                case "patient_id_desc":
-                    patients = patients.OrderByDescending(p => p.ID);
-                    break;
-                case "patient_name":
-                    patients = patients.OrderBy(p => p.Name);
-                    break;
-                case "patient_name_desc":
-                    patients = patients.OrderByDescending(p => p.Name);
-                    break;
-                case "patient_last_name":
-                    patients = patients.OrderBy(p => p.LastName);
-                    break;
-                case "patient_last_name_desc":
-                    patients = patients.OrderByDescending(p => p.LastName);
-                    break;
-                case "patient_birth_date":
-                    patients = patients.OrderBy(p => p.BirthDate);
-                    break;
-                case "patient_birth_date_desc":
-                    patients = patients.OrderByDescending(p => p.BirthDate);
-                    break;
-                case "patient_phone_number":
-                    patients = patients.OrderBy(p => p.PhoneNumber);
-                    break;
-                case "patient_phone_number_desc":
-                    patients = patients.OrderByDescending(p => p.PhoneNumber);
-                    break;
-            }
+            patients = _patientService.SortPatients(sortOrder, patients);
+
             return View(await patients.AsNoTracking().ToListAsync());
         }
 
@@ -82,8 +48,8 @@ namespace Prescriptor.Web.Controllers
                 return NotFound();
             }
 
-            var patient = await _context.Patients
-                .SingleOrDefaultAsync(m => m.ID == id);
+            var patient = await _patientService.GetPatient(id);
+
             if (patient == null)
             {
                 return NotFound();
@@ -107,8 +73,7 @@ namespace Prescriptor.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(patient);
-                await _context.SaveChangesAsync();
+                await _patientService.AddPatient(patient);
                 return RedirectToAction(nameof(Index));
             }
             return View(patient);
@@ -122,7 +87,7 @@ namespace Prescriptor.Web.Controllers
                 return NotFound();
             }
 
-            var patient = await _context.Patients.SingleOrDefaultAsync(m => m.ID == id);
+            var patient = await _patientService.GetPatient(id);
             if (patient == null)
             {
                 return NotFound();
@@ -146,12 +111,11 @@ namespace Prescriptor.Web.Controllers
             {
                 try
                 {
-                    _context.Update(patient);
-                    await _context.SaveChangesAsync();
+                    await _patientService.UpdatePatient(patient);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PatientExists(patient.ID))
+                    if (!_patientService.PatientExists(patient.ID))
                     {
                         return NotFound();
                     }
@@ -173,8 +137,7 @@ namespace Prescriptor.Web.Controllers
                 return NotFound();
             }
 
-            var patient = await _context.Patients
-                .SingleOrDefaultAsync(m => m.ID == id);
+            var patient = await _patientService.GetPatient(id);
             if (patient == null)
             {
                 return NotFound();
@@ -188,15 +151,8 @@ namespace Prescriptor.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var patient = await _context.Patients.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Patients.Remove(patient);
-            await _context.SaveChangesAsync();
+            await _patientService.DeletePatient(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PatientExists(int id)
-        {
-            return _context.Patients.Any(e => e.ID == id);
         }
     }
 }

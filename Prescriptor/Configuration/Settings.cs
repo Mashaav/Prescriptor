@@ -2,6 +2,6 @@
 {
     public class Settings
     {
-        public int ExpirationTime { get; set; } = -30;
+        public int ExpirationTime { get; set; }
     }
 }

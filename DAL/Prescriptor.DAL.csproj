@@ -115,15 +115,10 @@
       <DependentUpon>20171025121334_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\PrescriptorContextModelSnapshot.cs" />
+    <Compile Include="Models\ErrorViewModel.cs" />
     <Compile Include="Models\Patient.cs" />
     <Compile Include="Models\Prescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BLL\Prescriptor.BLL.csproj">
-      <Project>{af9b3cc5-f0ba-4bea-8158-509c7c2399a9}</Project>
-      <Name>Prescriptor.BLL</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
